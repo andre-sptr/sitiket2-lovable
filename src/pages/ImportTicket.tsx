@@ -13,10 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Save, RotateCcw, AlertCircle } from 'lucide-react';
+import { Save, RotateCcw, AlertCircle, ShieldX, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useDropdownOptions } from '@/hooks/useDropdownOptions';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTeknisi } from '@/hooks/useTeknisi';
 
 interface TicketFormData {
   // Lokasi
@@ -89,7 +91,9 @@ const REQUIRED_FIELDS: { field: keyof TicketFormData; label: string }[] = [
 const ImportTicket = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { options: DROPDOWN_OPTIONS } = useDropdownOptions();
+  const { activeTeknisi } = useTeknisi();
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState<TicketFormData>(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -100,6 +104,24 @@ const ImportTicket = () => {
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Guest users cannot access this page
+  if (user?.role === 'guest') {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <ShieldX className="w-16 h-16 text-muted-foreground mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Akses Ditolak</h2>
+          <p className="text-muted-foreground mb-4">
+            Role Guest hanya dapat melihat data, tidak dapat menambah atau mengedit tiket.
+          </p>
+          <Button onClick={() => navigate('/dashboard')}>
+            Kembali ke Dashboard
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -379,7 +401,42 @@ const ImportTicket = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField label="Teknisi 1" field="teknisi1" placeholder="22010054-DIMAS RIO" />
+                {/* Teknisi Dropdown */}
+                <div className="space-y-1.5">
+                  <Label className={`text-xs font-medium ${errors.teknisi1 && touched.teknisi1 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    Teknisi
+                  </Label>
+                  <Select 
+                    value={formData.teknisi1} 
+                    onValueChange={(v) => updateField('teknisi1', v)}
+                  >
+                    <SelectTrigger className={errors.teknisi1 && touched.teknisi1 ? 'border-destructive' : ''}>
+                      <SelectValue placeholder="Pilih Teknisi" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border shadow-lg z-50">
+                      {activeTeknisi.map(teknisi => (
+                        <SelectItem key={teknisi.id} value={teknisi.name}>
+                          <div className="flex items-center gap-2">
+                            <span>{teknisi.name}</span>
+                            <span className="text-xs text-muted-foreground">({teknisi.area})</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {formData.teknisi1 && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                      <Phone className="w-3 h-3" />
+                      {activeTeknisi.find(t => t.name === formData.teknisi1)?.phone || '-'}
+                    </div>
+                  )}
+                  {errors.teknisi1 && touched.teknisi1 && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.teknisi1}
+                    </p>
+                  )}
+                </div>
                 <SelectField label="Tim" field="tim" options={DROPDOWN_OPTIONS.tim} />
               </div>
             </CardContent>

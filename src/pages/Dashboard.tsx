@@ -21,8 +21,7 @@ import {
   TrendingUp,
   Percent,
   Plus,
-  RefreshCw,
-  ArrowRight
+  RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
@@ -67,31 +66,25 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-800">Dashboard</h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Tiket hari ini — {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-2 rounded-xl border-slate-200 hover:bg-slate-50" 
-              onClick={handleRefresh} 
-              disabled={isRefreshing}
-            >
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-1" onClick={handleRefresh} disabled={isRefreshing}>
               <RefreshCw 
-                className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} 
+                className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} 
               />
               Refresh
             </Button>
             {user?.role !== 'admin' && user?.role !== 'guest' && (
               <Link to="/import">
-                <Button size="sm" className="gap-2 rounded-xl bg-gradient-to-r from-primary to-teal-500 hover:opacity-90 transition-opacity shadow-md">
+                <Button size="sm" className="gap-2">
                   <Plus className="w-4 h-4" />
                   Import Tiket
                 </Button>
@@ -101,7 +94,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {isRefreshing ? (
             <>
               <StatsCardSkeleton />
@@ -141,7 +134,7 @@ const Dashboard = () => {
         </div>
 
         {/* Secondary Stats */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4">
           {isRefreshing ? (
             <>
               <StatsCardSkeleton />
@@ -168,22 +161,22 @@ const Dashboard = () => {
 
         {/* Alerts */}
         {(overdueTickets.length > 0 || dueSoonTickets.length > 0 || unassignedTickets.length > 0) && (
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {overdueTickets.length > 0 && (
-              <Badge variant="critical" className="gap-2 py-2 px-4 text-sm rounded-full shadow-sm">
-                <AlertTriangle className="w-4 h-4" />
+              <Badge variant="critical" className="gap-1.5 py-1.5 px-3">
+                <AlertTriangle className="w-3.5 h-3.5" />
                 {overdueTickets.length} tiket overdue
               </Badge>
             )}
             {dueSoonTickets.length > 0 && (
-              <Badge variant="warning" className="gap-2 py-2 px-4 text-sm rounded-full shadow-sm">
-                <Clock className="w-4 h-4" />
+              <Badge variant="warning" className="gap-1.5 py-1.5 px-3">
+                <Clock className="w-3.5 h-3.5" />
                 {dueSoonTickets.length} tiket hampir due
               </Badge>
             )}
             {unassignedTickets.length > 0 && (
-              <Badge variant="info" className="gap-2 py-2 px-4 text-sm rounded-full shadow-sm">
-                <TicketIcon className="w-4 h-4" />
+              <Badge variant="info" className="gap-1.5 py-1.5 px-3">
+                <TicketIcon className="w-3.5 h-3.5" />
                 {unassignedTickets.length} belum assign
               </Badge>
             )}
@@ -191,26 +184,23 @@ const Dashboard = () => {
         )}
 
         {/* Ticket List */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <div className="flex items-center justify-between p-5 border-b border-slate-100">
-            <h2 className="text-lg font-semibold text-slate-800">Tiket Hari Ini</h2>
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Tiket Hari Ini</h2>
             <Link to="/tickets">
-              <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary hover:bg-primary/10 rounded-xl">
+              <Button variant="ghost" size="sm">
                 Lihat Semua
-                <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
           
-          <div className="p-4 space-y-3">
+          <div className="space-y-3">
             {isRefreshing ? (
               <TicketCardSkeleton count={3} />
             ) : sortedTickets.length === 0 ? (
-              <div className="text-center py-16 text-slate-400">
-                <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <TicketIcon className="w-8 h-8 text-slate-300" />
-                </div>
-                <p className="font-medium">Belum ada tiket hari ini</p>
+              <div className="text-center py-12 text-muted-foreground">
+                <TicketIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Belum ada tiket hari ini</p>
               </div>
             ) : (
               sortedTickets.map((ticket, index) => (
