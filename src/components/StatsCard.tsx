@@ -12,29 +12,34 @@ interface StatsCardProps {
 
 const variantStyles = {
   default: {
-    bg: 'bg-muted/50',
-    icon: 'text-muted-foreground',
-    value: 'text-foreground',
+    iconBg: 'bg-slate-100',
+    iconColor: 'text-slate-600',
+    valueColor: 'text-slate-800',
+    accentGradient: 'from-slate-400 to-slate-500',
   },
   primary: {
-    bg: 'bg-primary/10',
-    icon: 'text-primary',
-    value: 'text-primary',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary',
+    valueColor: 'text-primary',
+    accentGradient: 'from-primary to-teal-400',
   },
   success: {
-    bg: 'bg-emerald-500/10',
-    icon: 'text-emerald-600',
-    value: 'text-emerald-600',
+    iconBg: 'bg-emerald-50',
+    iconColor: 'text-emerald-600',
+    valueColor: 'text-emerald-600',
+    accentGradient: 'from-emerald-400 to-teal-500',
   },
   warning: {
-    bg: 'bg-amber-500/10',
-    icon: 'text-amber-600',
-    value: 'text-amber-600',
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-600',
+    valueColor: 'text-amber-600',
+    accentGradient: 'from-amber-400 to-orange-500',
   },
   danger: {
-    bg: 'bg-destructive/10',
-    icon: 'text-destructive',
-    value: 'text-destructive',
+    iconBg: 'bg-red-50',
+    iconColor: 'text-red-600',
+    valueColor: 'text-red-600',
+    accentGradient: 'from-red-400 to-rose-500',
   },
 };
 
@@ -48,22 +53,25 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   const styles = variantStyles[variant];
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between">
+    <Card className="group relative overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
+      {/* Top accent line */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${styles.accentGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+            <p className="text-sm font-medium text-slate-500 mb-2">
               {title}
             </p>
-            <p className={`text-2xl md:text-3xl font-bold ${styles.value}`}>
+            <p className={`text-3xl font-bold tracking-tight ${styles.valueColor}`}>
               {value}
             </p>
             {subtitle && (
-              <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
+              <p className="text-xs text-slate-400 mt-2">{subtitle}</p>
             )}
           </div>
-          <div className={`p-2.5 rounded-lg ${styles.bg}`}>
-            <Icon className={`w-5 h-5 ${styles.icon}`} />
+          <div className={`p-3 rounded-xl ${styles.iconBg} transition-transform duration-300 group-hover:scale-110`}>
+            <Icon className={`w-6 h-6 ${styles.iconColor}`} />
           </div>
         </div>
       </CardContent>

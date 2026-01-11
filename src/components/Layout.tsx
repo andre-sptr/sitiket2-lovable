@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   LayoutDashboard, 
   Ticket, 
@@ -13,7 +12,8 @@ import {
   Menu, 
   X, 
   Bell,
-  ChevronDown
+  ChevronDown,
+  Sparkles
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { mockNotifications } from '@/lib/mockData';
@@ -65,28 +65,33 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const unreadNotifications = mockNotifications.filter(n => !n.isRead && n.userId === user?.id).length;
 
   return (
-    <div className="min-h-screen bg-slate-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50">
+      {/* Subtle gradient orbs for visual interest */}
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
+      
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14 md:h-16">
+          <div className="flex items-center justify-between h-16">
             {/* Logo & Mobile Menu Toggle */}
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden"
+                className="md:hidden hover:bg-slate-100"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
-              <Link to="/dashboard" className="flex items-center gap-2">
-                <img 
-                  src="/logo.png" 
-                  alt="Logo" 
-                  className="w-8 h-8 object-contain" 
-                />
-                <span className="font-bold text-lg hidden sm:block">SiTiket</span>
+              <Link to="/dashboard" className="flex items-center gap-3 group">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative w-10 h-10 bg-gradient-to-br from-primary to-teal-400 rounded-xl flex items-center justify-center shadow-md">
+                    <Ticket className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+                <span className="font-bold text-lg hidden sm:block bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">SiTiket</span>
               </Link>
             </div>
 
@@ -98,9 +103,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 return (
                   <Link key={item.path} to={item.path}>
                     <Button
-                      variant={isActive ? 'secondary' : 'ghost'}
+                      variant="ghost"
                       size="sm"
-                      className={`gap-2 ${isActive ? 'bg-secondary' : ''}`}
+                      className={`gap-2 px-4 rounded-xl transition-all duration-200 ${
+                        isActive 
+                          ? 'bg-primary/10 text-primary hover:bg-primary/15 font-medium' 
+                          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
                     >
                       <Icon className="w-4 h-4" />
                       {item.label}
@@ -115,24 +124,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="w-5 h-5" />
+                  <Button variant="ghost" size="icon" className="relative rounded-xl hover:bg-slate-100">
+                    <Bell className="w-5 h-5 text-slate-600" />
                     {unreadNotifications > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                      <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md">
                         {unreadNotifications}
                       </span>
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-72">
-                  <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-80 rounded-xl shadow-xl border-slate-200/50 bg-white/95 backdrop-blur-xl">
+                  <DropdownMenuLabel className="font-semibold text-slate-800">Notifikasi</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {mockNotifications.slice(0, 5).map((notif) => (
-                    <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-1 py-2">
-                      <span className={`text-sm ${!notif.isRead ? 'font-medium' : ''}`}>
+                    <DropdownMenuItem key={notif.id} className="flex flex-col items-start gap-1 py-3 px-4 cursor-pointer hover:bg-slate-50 rounded-lg mx-1">
+                      <span className={`text-sm ${!notif.isRead ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>
                         {notif.title}
                       </span>
-                      <span className="text-xs text-muted-foreground">{notif.message}</span>
+                      <span className="text-xs text-slate-500">{notif.message}</span>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -141,23 +150,26 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-2">
-                    <div className="w-7 h-7 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-semibold">
+                  <Button variant="ghost" size="sm" className="gap-2 pl-2 pr-3 rounded-xl hover:bg-slate-100">
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-teal-400 rounded-lg flex items-center justify-center text-sm font-semibold text-white shadow-sm">
                       {user?.name.charAt(0)}
                     </div>
-                    <span className="hidden sm:block max-w-[100px] truncate">{user?.name}</span>
-                    <ChevronDown className="w-4 h-4 hidden sm:block" />
+                    <span className="hidden sm:block max-w-[100px] truncate font-medium text-slate-700">{user?.name}</span>
+                    <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56 rounded-xl shadow-xl border-slate-200/50 bg-white/95 backdrop-blur-xl">
+                  <DropdownMenuLabel className="p-4">
                     <div className="flex flex-col">
-                      <span>{user?.name}</span>
-                      <span className="text-xs font-normal text-muted-foreground capitalize">{user?.role}</span>
+                      <span className="font-semibold text-slate-800">{user?.name}</span>
+                      <span className="text-xs font-normal text-slate-500 capitalize mt-0.5">{user?.role}</span>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-destructive">
+                  <DropdownMenuItem 
+                    onClick={logout} 
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer mx-1 rounded-lg"
+                  >
                     <LogOut className="w-4 h-4 mr-2" />
                     Keluar
                   </DropdownMenuItem>
@@ -171,8 +183,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Mobile Nav Drawer */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileMenuOpen(false)} />
-          <nav className="fixed left-0 top-14 bottom-0 w-64 bg-card border-r border-border p-4 animate-slide-in-right">
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
+          <nav className="fixed left-0 top-16 bottom-0 w-72 bg-white/95 backdrop-blur-xl border-r border-slate-200/50 p-4 animate-slide-in-left shadow-xl">
             <div className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -184,8 +196,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <Button
-                      variant={isActive ? 'secondary' : 'ghost'}
-                      className={`w-full justify-start gap-3 ${isActive ? 'bg-secondary' : ''}`}
+                      variant="ghost"
+                      className={`w-full justify-start gap-3 rounded-xl h-12 ${
+                        isActive 
+                          ? 'bg-primary/10 text-primary font-medium' 
+                          : 'text-slate-600 hover:bg-slate-100'
+                      }`}
                     >
                       <Icon className="w-5 h-5" />
                       {item.label}
@@ -194,12 +210,20 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 );
               })}
             </div>
+            
+            {/* Mobile footer */}
+            <div className="absolute bottom-6 left-4 right-4">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-xs text-slate-500">SiTiket v1.0</span>
+              </div>
+            </div>
           </nav>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-4 md:py-6">
+      <main className="relative container mx-auto px-4 py-6 md:py-8">
         {children}
       </main>
     </div>
