@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { 
   LayoutDashboard, 
   Ticket, 
@@ -68,7 +68,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const unreadNotifications = mockNotifications.filter(n => !n.isRead && n.userId === user?.id).length;
 
   return (
-    <div className="min-h-screen bg-slate-200">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
         <div className="container mx-auto px-4">
@@ -115,6 +115,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+              
               {/* Notifications */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
